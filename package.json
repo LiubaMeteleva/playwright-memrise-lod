@@ -1,0 +1,13 @@
+{
+  "name": "playwright-memrise-lod",
+  "version": "0.0.1",
+  "description": "Copy words from lod.lu to a Memrise course",
+  "main": "index.js",
+  "repository": "git@github.com:LiubaMeteleva/playwright-memrise-lod.git",
+  "author": "Liubov Mietielieva <l.meteleva@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "playwright": "^1.6.2"
+  }
+}
