@@ -9,5 +9,8 @@
   "private": true,
   "devDependencies": {
     "playwright": "^1.6.2"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
   }
 }
