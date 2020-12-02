@@ -105,3 +105,6 @@ dist
 
 # Temp folder 
 tmp/
+
+# Editor files
+.vscode/
