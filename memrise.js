@@ -34,7 +34,7 @@ const uploadData = async (context, words) => {
             return await page.waitForResponse('https://app.memrise.com/ajax/thing/cell/upload_file/');
         }
         catch (e) {
-            console.warn('Can not fine input for', word);
+            console.warn('Can not find input for', word);
             return Promise.resolve();
         }
     })
