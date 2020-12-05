@@ -3,7 +3,6 @@ const settings = require("./settings.json");
 const dir = settings.directory;
 
 const collectData = async (context, word) => {
-  // TODO: update word from EN translation
   const page = await context.newPage();
   await page.route('**/*.{png,jpg,jpeg}', route => route.abort());
   await page.goto('https://www.lod.lu/');
@@ -11,6 +10,10 @@ const collectData = async (context, word) => {
 
   await page.fill('input[name="lodsearchbox"]', word);
   await page.press('input[name="lodsearchbox"]', 'Enter');
+  const firstFinding = await page.frame({ name: 'res' }).innerText('body > div:nth-child(1) > a');
+  const firstFindingPartOfSpeech = await page.frame({ name: 'res' }).innerText('body > div:nth-child(1) > a > span');
+  console.log("firstFinding", firstFinding, word) ;
+  word = firstFinding.replace(firstFindingPartOfSpeech, '').trim();
 
   const filePath = `${dir}/${word}.mp3`;
   page.on('response', response => {
@@ -20,6 +23,7 @@ const collectData = async (context, word) => {
       );
     }
   });
+
   await page.frame({ name: 'res' }).click('body > div:nth-child(1) > a');
   await page.click('div[id="ContentBar-Languages"] >> text=/.*EN.*/');
   const enPage = await page.frame({ name: 'arten' });
@@ -28,7 +32,8 @@ const collectData = async (context, word) => {
   const transcription = await enPage.innerText('#ipa');
   await page.close();
   return {
-    lu: word, en: en.trim() || '',
+    lu: word, 
+    en: en.trim() || '',
     partOfSpeech: partOfSpeech.trim() || '',
     transcription: transcription || '',
   }
