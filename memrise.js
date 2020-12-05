@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
-const tempDir = './tmp/';
+const settings = require("./settings.json");
+const tempDir = settings.directory;
 
 const toCsv = words => {
     const lines = words.map(word => `${word.lu},${word.en},${word.partOfSpeech},${word.transcription}`);

@@ -1,6 +1,6 @@
 const fs = require('fs');
-const fsPromises = fs.promises;
-const dir = './tmp';
+const settings = require("./settings.json");
+const dir = settings.directory;
 
 const collectData = async (context, word) => {
   // TODO: update word from EN translation
