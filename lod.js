@@ -1,29 +1,43 @@
 const fs = require('fs');
+const fsPromises = fs.promises;
+const dir = './tmp';
 
 const collectData = async (context, word) => {
+  // TODO: update word from EN translation
   const page = await context.newPage();
+  await page.route('**/*.{png,jpg,jpeg}', route => route.abort());
   await page.goto('https://www.lod.lu/');
+  page.on('error', error => console.error(error));
+
   await page.fill('input[name="lodsearchbox"]', word);
   await page.press('input[name="lodsearchbox"]', 'Enter');
+
+  const filePath = `${dir}/${word}.mp3`;
   page.on('response', response => {
     if (response.url().endsWith('mp3')) {
-      response.body().then(file => {
-        const fileName = response.url().split('/').pop();
-        writeFile(file, word);
-      });
+      response.body().then(file =>
+        writeFile(file, filePath)
+      );
     }
   });
-  await page.frame({ name: "res" }).click('body > div:nth-child(1) > a');
+  await page.frame({ name: 'res' }).click('body > div:nth-child(1) > a');
+  await page.click('div[id="ContentBar-Languages"] >> text=/.*EN.*/');
+  const enPage = await page.frame({ name: 'arten' });
+  const en = await enPage.innerText('.et');
+  const partOfSpeech = await enPage.innerText('.klass');
+  const transcription = await enPage.innerText('#ipa');
   await page.close();
-  return word;
+  return {
+    lu: word, en: en.trim() || '',
+    partOfSpeech: partOfSpeech.trim() || '',
+    transcription: transcription || '',
+  }
 };
 
-const writeFile = (file, word) => {
-  const dir = './tmp';
+const writeFile = (file, filePath) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }
-  const filePath = `${dir}/${word}.mp3`;
   fs.createWriteStream(filePath).write(file);
 };
 
