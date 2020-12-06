@@ -12,7 +12,6 @@ const collectData = async (context, word) => {
   await page.press('input[name="lodsearchbox"]', 'Enter');
   const firstFinding = await page.frame({ name: 'res' }).innerText('body > div:nth-child(1) > a');
   const firstFindingPartOfSpeech = await page.frame({ name: 'res' }).innerText('body > div:nth-child(1) > a > span');
-  console.log("firstFinding", firstFinding, word) ;
   word = firstFinding.replace(firstFindingPartOfSpeech, '').trim();
 
   const filePath = `${dir}/${word}.mp3`;
