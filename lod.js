@@ -26,13 +26,15 @@ const collectData = async (context, word) => {
   await page.frame({ name: 'res' }).click('body > div:nth-child(1) > a');
   await page.click('div[id="ContentBar-Languages"] >> text=/.*EN.*/');
   const enPage = await page.frame({ name: 'arten' });
-  const en = await enPage.innerText('.et');
+  let en = await enPage.innerText('.et');
+  en = en.trim()
+  en = en === '--- coming soon ---' ? '' : en;
   const partOfSpeech = await enPage.innerText('.klass');
   const transcription = await enPage.innerText('#ipa');
   await page.close();
   return {
-    lu: word, 
-    en: en.trim() || '',
+    lu: word,
+    en: en,
     partOfSpeech: partOfSpeech.trim() || '',
     transcription: transcription || '',
   }
