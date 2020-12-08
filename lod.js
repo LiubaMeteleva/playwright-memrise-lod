@@ -1,6 +1,5 @@
-const fs = require('fs');
-const settings = require("./settings.json");
-const dir = settings.directory;
+import { existsSync, mkdirSync, createWriteStream } from 'fs';
+const tempDir = './tmp/';
 
 const collectData = async (context, word) => {
   const page = await context.newPage();
@@ -14,7 +13,7 @@ const collectData = async (context, word) => {
   const firstFindingPartOfSpeech = await page.frame({ name: 'res' }).innerText('body > div:nth-child(1) > a > span');
   word = firstFinding.replace(firstFindingPartOfSpeech, '').trim();
 
-  const filePath = `${dir}/${word}.mp3`;
+  const filePath = `${tempDir}/${word}.mp3`;
   page.on('response', response => {
     if (response.url().endsWith('mp3')) {
       response.body().then(file =>
@@ -41,10 +40,10 @@ const collectData = async (context, word) => {
 };
 
 const writeFile = (file, filePath) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+  if (!existsSync(tempDir)) {
+    mkdirSync(tempDir);
   }
-  fs.createWriteStream(filePath).write(file);
+  createWriteStream(filePath).write(file);
 };
 
-module.exports.collectData = collectData;
+export { collectData };

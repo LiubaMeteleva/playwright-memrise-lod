@@ -1,9 +1,9 @@
-const fs = require('fs').promises;
-const settings = require("./settings.json");
-const tempDir = settings.directory;
-
+import { promises as fs } from 'fs';
+const tempDir = './tmp/';
 const toCsv = words => {
-    const lines = words.map(word => `${word.lu},${word.en},${word.partOfSpeech},${word.transcription}`);
+    const lines = words.map(word =>
+        `${word.lu.replace(/,/g, ';')},${word.en.replace(/,/g, ';')},${word.partOfSpeech},${word.transcription}`
+    );
     return lines.join('\n');
 };
 
@@ -20,12 +20,28 @@ const uploadData = async (context, words) => {
     await page.click('text=/.*Advanced.*/');
     await page.click('text=/.*Bulk add words.*/');
     await page.click('text="Comma"');
-    await page.fill('//textarea', toCsv(words));
+    const csv = toCsv(words)
+    console.log(csv);
+    await page.fill('//textarea', csv);
     await page.click('text="Add"');
     const files = await fs.readdir(tempDir);
     console.log('files', files)
     const promises = files.map(async mp3 => {
-        const word = mp3.slice(0, -4);
+        let word = mp3.slice(0, -4);
+        if (!isNaN(word)) {
+            const wordData = words.find(el => el.audio === parseInt(word))
+            if (!wordData) {
+                console.error("can not fid data for", word);
+            }
+            word = wordData.lu;
+        }
+        if (word.includes(' ') || word.includes('\'')) {
+            const parts = word.split(/(\s|\'|\,|\?|\/)/g)
+                .filter(part => part.length > 2);
+            const longest = parts.reduce((a, b) => a.length > b.length ? a : b, '');
+            word = longest;
+        }
+        word = word.replace(/\'/g, '\\\'')
         const selector = `//tr[contains(., '${word}') and contains(., 'no audio file')]/td[4]/div/div/input`;
         const filePath = `${tempDir}${mp3}`;
         try {
@@ -34,7 +50,8 @@ const uploadData = async (context, words) => {
             return await page.waitForResponse('https://app.memrise.com/ajax/thing/cell/upload_file/');
         }
         catch (e) {
-            console.warn('Can not find input for', word);
+            console.warn('Can not find input for', word, mp3);
+            console.log(selector);
             return Promise.resolve();
         }
     })
@@ -46,4 +63,4 @@ const uploadData = async (context, words) => {
     await page.close();
 };
 
-module.exports.uploadData = uploadData;
+export { uploadData };

@@ -7,10 +7,12 @@
   "author": "Liubov Mietielieva <l.meteleva@gmail.com>",
   "license": "MIT",
   "private": true,
+  "type": "module",
   "devDependencies": {
     "playwright": "^1.6.2"
   },
   "dependencies": {
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.1"
   }
 }
