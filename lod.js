@@ -45,5 +45,3 @@ const writeFile = (file, filePath) => {
   }
   createWriteStream(filePath).write(file);
 };
-
-export { collectData };
