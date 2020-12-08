@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, createWriteStream } from 'fs';
 const tempDir = './tmp/';
 
-const collectData = async (context, word) => {
+export const collectLodData = async (context, word) => {
   const page = await context.newPage();
   await page.route('**/*.{png,jpg,jpeg}', route => route.abort());
   await page.goto('https://www.lod.lu/');

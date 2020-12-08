@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import { collectData } from './lod.js';
+import { collectLodData } from './lod.js';
 import { uploadData } from './memrise.js';
 import { collectMemorieData } from './memorie.js';
 import { config } from 'dotenv';
@@ -16,7 +16,7 @@ const uploadWords = async () => {
   const words = readFileSync('words.csv', 'utf8').trim().split('\n');
   console.log('Words to add:', words);
 
-  const data = await Promise.all(words.map(word => collectData(context, word)));
+  const data = await Promise.all(words.map(word => collectLodData(context, word)));
   console.log(data);
   await uploadData(context, data);
   await browser.close();
