@@ -1,9 +1,9 @@
 import { chromium } from 'playwright';
 import { collectData } from './lod.js';
 import { uploadData } from './memrise.js';
-import { collectData as _collectData } from './memorie.js';
+import { collectMemorieData } from './memorie.js';
 import { config } from 'dotenv';
-import { readFileSync } from 'fs';
+import { readFileSync, stat } from 'fs';
 
 export const tempDir = "./tmp/";
 config();
@@ -22,4 +22,14 @@ const uploadWords = async () => {
   await browser.close();
 };
 
-uploadWords();
+const uploadDataFromMemorie = (start = 0, end = 1320) => {
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  const data = await collectMemorieData(context, stat, end);
+  await uploadData(context, data);
+  await browser.close();
+}
+
+// uploadWords();
+// uploadDataFromMemorie();
+console.log('Done');
