@@ -4,6 +4,7 @@ import { uploadData } from './memrise.js';
 import { collectMemorieData } from './memorie.js';
 import { config } from 'dotenv';
 import { readFileSync, stat } from 'fs';
+import { cleanExtraAudio } from './clean.js'
 
 export const tempDir = "./tmp/";
 config();
@@ -22,7 +23,7 @@ const uploadWords = async () => {
   await browser.close();
 };
 
-const uploadDataFromMemorie = (start = 0, end = 1320) => {
+const uploadDataFromMemorie = async (start = 0, end = 1320) => {
   const browser = await chromium.launch();
   const context = await browser.newContext();
   const data = await collectMemorieData(context, stat, end);
@@ -32,4 +33,4 @@ const uploadDataFromMemorie = (start = 0, end = 1320) => {
 
 // uploadWords();
 // uploadDataFromMemorie();
-console.log('Done');
+cleanExtraAudio();
